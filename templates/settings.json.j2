@@ -1,0 +1,197 @@
+// {{ ansible_managed }}
+{
+  // Name your instance!
+  "title": "{{ etherpad_title }}",
+
+  // favicon default name
+  // alternatively, set up a fully specified Url to your own favicon
+  "favicon": "favicon.ico",
+
+  //IP and port which etherpad should bind at
+  "ip": "{{ etherpad_bind_ip }}",
+  "port" : {{ etherpad_bind_port }},
+
+{% if etherpad_ssl_enabled %}
+  // Node native SSL support
+  // this is disabled by default
+  //
+  // make sure to have the minimum and correct file access permissions set
+  // so that the Etherpad server can access them
+
+  "ssl" : {
+            "key"  : "{{ etherpad_ssl_key }}",
+            "cert" : "{{ etherpad_ssl_cert }}",
+            "ca": [ {{ etherpad_ssl_ca | join(",") }} ]
+          },
+{% endif %}
+
+  //The Type of the database. You can choose between dirty, postgres, sqlite and mysql
+  //You shouldn't use "dirty" for for anything else than testing or development
+  "dbType" : "{{ etherpad_db_type }}",
+  "dbSettings" : {
+{% if etherpad_db_type == "dirty" %}
+      "filename" : "{{ etherpad_db_dirty_filename }}"
+{% elif etherpad_db_type == "mysql" %}
+      "user"    : "{{ etherpad_db_mysql_user }}",
+      "host"    : "{{ etherpad_db_mysql_host }}",
+      "password": "{{ etherpad_db_mysql_password }}",
+      "database": "{{ etherpad_db_mysql_database }}",
+      "charset" : "{{ etherpad_db_mysql_charset }}"
+{% endif %}
+  },
+
+  //the default text of a pad
+  "defaultPadText" : "{{ etherpad_default_pad_text }}",
+
+  /* Default Pad behavior, users can override by changing */
+  "padOptions": {
+    "noColors": {{ etherpad_pad_options_no_colors }},
+    "showControls": {{ etherpad_pad_options_show_controls }},
+    "showChat": {{ etherpad_pad_options_show_chat }},
+    "showLineNumbers": {{ etherpad_pad_options_show_line_numbers }},
+    "useMonospaceFont": {{ etherpad_pad_options_use_monospace_font }},
+    "userName": {{ etherpad_pad_options_user_name }},
+    "userColor": {{ etherpad_pad_options_user_color }},
+    "rtl": {{ etherpad_pad_options_rtl }},
+    "alwaysShowChat": {{ etherpad_pad_options_always_show_chat }},
+    "chatAndUsers": {{ etherpad_pad_options_chat_and_users }},
+    "lang": "{{ etherpad_pad_options_lang }}"
+  },
+
+  /* Should we suppress errors from being visible in the default Pad Text? */
+  "suppressErrorsInPadText" : false,
+
+  /* Users must have a session to access pads. This effectively allows only group pads to be accessed. */
+  "requireSession" : false,
+
+  /* Users may edit pads but not create new ones. Pad creation is only via the API. This applies both to group pads and regular pads. */
+  "editOnly" : false,
+
+  /* Users, who have a valid session, automatically get granted access to password protected pads */
+  "sessionNoPassword" : false,
+
+  /* if true, all css & js will be minified before sending to the client. This will improve the loading performance massivly,
+     but makes it impossible to debug the javascript/css */
+  "minify" : true,
+
+  /* How long may clients use served javascript code (in seconds)? Without versioning this
+     may cause problems during deployment. Set to 0 to disable caching */
+  "maxAge" : 21600, // 60 * 60 * 6 = 6 hours
+
+  /* This is the absolute path to the Abiword executable. Setting it to null, disables abiword.
+     Abiword is needed to advanced import/export features of pads*/
+  "abiword" : null,
+
+  /* This is the absolute path to the soffice executable. Setting it to null, disables LibreOffice exporting.
+     LibreOffice can be used in lieu of Abiword to export pads */
+  "soffice" : null,
+
+  /* This is the path to the Tidy executable. Setting it to null, disables Tidy.
+     Tidy is used to improve the quality of exported pads*/
+  "tidyHtml" : null,
+
+  /* Allow import of file types other than the supported types: txt, doc, docx, rtf, odt, html & htm */
+  "allowUnknownFileEnds" : true,
+
+  /* This setting is used if you require authentication of all users.
+     Note: /admin always requires authentication. */
+  "requireAuthentication" : false,
+
+  /* Require authorization by a module, or a user with is_admin set, see below. */
+  "requireAuthorization" : false,
+
+  /*when you use NginX or another proxy/ load-balancer set this to true*/
+  "trustProxy" : false,
+
+  /* Privacy: disable IP logging */
+  "disableIPlogging" : false,
+
+  /* Users for basic authentication. is_admin = true gives access to /admin.
+     Without the 'users' setting, /admin will not be available! */
+{% if etherpad_pad_users | length > 0 %}
+  "users": {
+  {% for user in etherpad_pad_users %}
+    "{{ user.name }}": {
+      "password": "{{ user.password }}",
+      "is_admin": {{ user.is_admin }}
+    }{% if ( loop.index + 1 ) < ( etherpad_pad_users | length ) %},{% endif %}
+
+  {% endfor %}
+  },
+{% endif %}
+
+  // restrict socket.io transport methods
+  "socketTransportProtocols" : ["xhr-polling", "jsonp-polling", "htmlfile"],
+
+  // Allow Load Testing tools to hit the Etherpad Instance.  Warning this will disable security on the instance.
+  "loadTest": false,
+
+  // Disable indentation on new line when previous line ends with some special chars (':', '[', '(', '{')
+  /*
+  "indentationOnNewLine": false,
+  */
+
+  /* The toolbar buttons configuration.
+  "toolbar": {
+    "left": [
+      ["bold", "italic", "underline", "strikethrough"],
+      ["orderedlist", "unorderedlist", "indent", "outdent"],
+      ["undo", "redo"],
+      ["clearauthorship"]
+    ],
+    "right": [
+      ["importexport", "timeslider", "savedrevision"],
+      ["settings", "embed"],
+      ["showusers"]
+    ],
+    "timeslider": [
+      ["timeslider_export", "timeslider_returnToPad"]
+    ]
+  },
+  */
+
+  /* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
+  "loglevel": "INFO",
+
+  //Logging configuration. See log4js documentation for further information
+  // https://github.com/nomiddlename/log4js-node
+  // You can add as many appenders as you want here:
+  "logconfig" :
+    { "appenders": [
+        { "type": "console"
+        //, "category": "access"// only logs pad access
+        }
+    /*
+      , { "type": "file"
+      , "filename": "your-log-file-here.log"
+      , "maxLogSize": 1024
+      , "backups": 3 // how many log files there're gonna be at max
+      //, "category": "test" // only log a specific category
+        }*/
+    /*
+      , { "type": "logLevelFilter"
+        , "level": "warn" // filters out all log messages that have a lower level than "error"
+        , "appender":
+          {  Use whatever appender you want here  }
+        }*/
+    /*
+      , { "type": "logLevelFilter"
+        , "level": "error" // filters out all log messages that have a lower level than "error"
+        , "appender":
+          { "type": "smtp"
+          , "subject": "An error occured in your EPL instance!"
+          , "recipients": "bar@blurdybloop.com, baz@blurdybloop.com"
+          , "sendInterval": 60*5 // in secs -- will buffer log messages; set to 0 to send a mail for every message
+          , "transport": "SMTP", "SMTP": { // see https://github.com/andris9/Nodemailer#possible-transport-methods
+              "host": "smtp.example.com", "port": 465,
+              "secureConnection": true,
+              "auth": {
+                  "user": "foo@example.com",
+                  "pass": "bar_foo"
+              }
+            }
+          }
+        }*/
+      ]
+    }
+}

@@ -1,0 +1,74 @@
+---
+etherpad_user: "etherpad"
+etherpad_group: "etherpad"
+etherpad_path_install: "/opt/etherpad-lite"
+etherpad_path_log: "/var/log/etherpad-lite"
+etherpad_path_initscript: ""
+etherpad_service: "etherpad-lite"
+etherpad_pre_commands: []
+etherpad_plugins:
+  - 'adminpads'
+  - 'align'
+  - 'autocomp'
+  - 'comments_page'
+  - 'font_color'
+  - 'font_family'
+  - 'font_size'
+  - 'headings'
+#  - 'headings2'
+  - 'hide_referrer'
+  - 'line_height'
+  - 'linkify'
+#  - 'markdown'
+  - 'message_all'
+  - 'padlist'
+  - 'page_view'
+  - 'print'
+  - 'rss'
+  - 'scrollto'
+  - 'subscript'
+  - 'superscript'
+#  - 'user_pad'
+#  - 'user_pad_frontend'
+
+etherpad_title: "Etherpad"
+etherpad_bind_ip: "0.0.0.0"
+etherpad_bind_port: "9001"
+
+etherpad_ssl_enabled: false
+etherpad_ssl_key: "/path-to-your/epl-server.key"
+etherpad_ssl_cert: "/path-to-your/epl-server.crt"
+etherpad_ssl_ca:
+  - "/path-to-your/epl-intermediate-cert1.crt"
+  - "/path-to-your/epl-intermediate-cert2.crt"
+
+etherpad_db_type: "dirty"
+etherpad_db_dirty_filename: "var/dirty.db"
+#etherpad_db_type: "mysql"
+etherpad_db_mysql_user: "etherpad"
+etherpad_db_mysql_host: "localhost"
+etherpad_db_mysql_password: "mySecretPassword123"
+etherpad_db_mysql_database: "etherpad"
+etherpad_db_mysql_charset: "utf8mb4"
+
+etherpad_default_pad_text: "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http://etherpad.org\n"
+
+etherpad_pad_options_no_colors: "false"
+etherpad_pad_options_show_controls: "true"
+etherpad_pad_options_show_chat: "true"
+etherpad_pad_options_show_line_numbers: "true"
+etherpad_pad_options_use_monospace_font: "false"
+etherpad_pad_options_user_name: "false"
+etherpad_pad_options_user_color: "false"
+etherpad_pad_options_rtl: "false"
+etherpad_pad_options_always_show_chat: "false"
+etherpad_pad_options_chat_and_users: "false"
+etherpad_pad_options_lang: "en-gb"
+
+etherpad_pad_users: []
+#  - name: "admin"
+#    password: "changeme1"
+#    is_admin: "true"
+#  - name: "user"
+#    password: "changeme1"
+#    is_admin: "false"

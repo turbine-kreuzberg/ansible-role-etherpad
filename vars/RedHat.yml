@@ -1,0 +1,9 @@
+---
+etherpad_required_packages:
+  - "gzip"
+  - "git"
+  - "curl"
+  - "python"
+  - "openssl-devel"
+  - "nodejs"
+  - "npm"

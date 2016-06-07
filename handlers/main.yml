@@ -1,0 +1,6 @@
+---
+- name: restart-etherpad
+  service:
+    name: "{{ etherpad_service }}"
+    state: restarted
+    enabled: yes

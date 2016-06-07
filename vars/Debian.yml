@@ -1,0 +1,16 @@
+---
+etherpad_pre_commands:
+  - "apt-get update"
+
+etherpad_required_packages:
+  - "gzip"
+  - "git"
+  - "curl"
+  - "python"
+  - "libssl-dev"
+  - "pkg-config"
+  - "build-essential"
+  - "nodejs"
+  - "npm"
+
+etherpad_path_initscript: "/etc/init.d/{{ etherpad_service }}"

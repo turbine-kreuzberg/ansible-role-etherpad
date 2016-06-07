@@ -1,0 +1,107 @@
+- name: etherpad | include OS specific variables ({{ ansible_os_family }})
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: etherpad | run OS specific commands ({{ ansible_os_family }})
+  command: "{{ item }}"
+  with_items: "{{ etherpad_pre_commands }}"
+
+- name: etherpad | install required packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ etherpad_required_packages }}"
+
+- name: etherpad | install required packages (RedHat)
+  yum:
+    name: "@Development tools"
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+- name: etherpad | install node binary management
+  command: "npm install -g n"
+
+- name: etherpad | switch to latest stable version
+  command: "n stable"
+
+- name: etherpad | create etherpad group '{{ etherpad_group }}'
+  group:
+    name: "{{ etherpad_group }}"
+    system: yes
+    state: present
+
+- name: etherpad | create etherpad user '{{ etherpad_user }}'
+  user:
+    name: "{{ etherpad_user }}"
+    group: "{{ etherpad_group }}"
+    system: yes
+    home: "/var/etherpad"
+    shell: /bin/bash
+
+- name: etherpad | create log directory
+  file:
+    path: "{{ etherpad_path_log }}"
+    owner: "{{ etherpad_user }}"
+    mode: "u+rwX"
+    recurse: yes
+    state: directory
+
+- name: etherpad | clone git repository into {{ etherpad_path_install }}
+  git:
+    repo: "https://github.com/ether/etherpad-lite.git"
+    dest: "{{ etherpad_path_install }}"
+    update: no
+
+- name: etherpad | set permissions on installation directory
+  file:
+    path: "{{ etherpad_path_install }}"
+    owner: "{{ etherpad_user }}"
+    group: "{{ etherpad_group }}"
+    mode: "u+rwX"
+    recurse: yes
+    state: directory
+  changed_when: false
+
+- name: etherpad | create configuration file settings.json
+  template:
+    src: "settings.json.j2"
+    dest: "{{ etherpad_path_install }}/settings.json"
+    owner: "{{ etherpad_user }}"
+    mode: "0644"
+    force: no
+  notify: "restart-etherpad"
+
+- name: etherpad | install dependencies
+  command: "./bin/installDeps.sh"
+  args:
+    chdir: '{{ etherpad_path_install }}'
+    creates: '{{ etherpad_path_install }}/.node-gyp'
+
+- name: etherpad | install plugins
+  npm:
+    name: "ep_{{ item }}"
+    path: '{{ etherpad_path_install }}'
+    state: present
+    production: yes
+  with_items: "{{ etherpad_plugins }}"
+  notify: "restart-etherpad"
+  when: etherpad_plugins is defined and etherpad_plugins | length > 0
+
+- name: etherpad | set permissions on etherpad directory
+  file:
+    path: "{{ etherpad_path_install }}"
+    owner: "{{ etherpad_user }}"
+    group: "{{ etherpad_group }}"
+    mode: "u+rwX"
+    recurse: yes
+    state: directory
+  changed_when: false
+
+- name: etherpad | create service script
+  template:
+    src: "etherpad-init.j2"
+    dest: "{{ etherpad_path_initscript }}"
+    owner: "{{ etherpad_user }}"
+    mode: "0755"
+    force: no
+  when: etherpad_path_initscript != ""
+  notify: "restart-etherpad"

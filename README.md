@@ -1,7 +1,7 @@
 etherpad-lite
 =============
 
-This role will install [etherpad-lite]() with plugins. 
+This role will install [etherpad-lite](http://etherpad.org/) with plugins. 
 
 Requirements
 ------------
